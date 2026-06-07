@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baldur's Rush — Kanye Wallace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #070c17;
+  --bg2:       #0c1220;
+  --bg3:       #111a2c;
+  --lime:      #c8f03c;
+  --lime-dim:  rgba(200,240,60,0.18);
+  --text:      #edeae3;
+  --text-muted:#6b6760;
+  --border:    rgba(255,255,255,0.07);
+  --border-hi: rgba(200,240,60,0.25);
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 17px; line-height: 1.7;
+  cursor: none; overflow-x: hidden;
+}
+
+/* ── custom cursor ── */
+#cursor {
+  position: fixed; top: 0; left: 0; z-index: 9999;
+  width: 8px; height: 8px;
+  background: var(--lime); border-radius: 50%;
+  pointer-events: none; will-change: transform;
+}
+#cursor-ring {
+  position: fixed; top: 0; left: 0; z-index: 9998;
+  width: 30px; height: 30px;
+  border: 1px solid rgba(200,240,60,0.4); border-radius: 50%;
+  pointer-events: none; will-change: transform;
+}
+*, button, a, [role="button"] { cursor: none !important; }
+
+/* ── particles ── */
+#particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.45; }
+
+/* ── nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.3rem 3.5rem;
+  background: linear-gradient(to bottom, rgba(7,12,23,0.96), transparent);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.35s, background 0.35s;
+}
+nav.scrolled { border-color: var(--border); background: rgba(7,12,23,0.9); backdrop-filter: blur(14px); }
+.nav-logo {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: 1.1rem; letter-spacing: -0.01em;
+  color: var(--text); text-decoration: none;
+}
+.nav-logo span { color: var(--lime); }
+.nav-back {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.78rem; font-weight: 400; letter-spacing: 0.07em;
+  color: var(--text-muted); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--lime); }
+.nav-back-arrow { font-size: 0.9rem; }
+
+/* ── banner ── */
+.banner {
+  position: relative; width: 100%; aspect-ratio: 21/8;
+  overflow: hidden; z-index: 2; margin-top: 0;
+  background-color: var(--bg3);
+}
+.banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(7,12,23,0.35) 0%,
+    rgba(7,12,23,0.0) 40%,
+    rgba(7,12,23,0.85) 100%);
+}
+/* right-side image with left fade */
+.banner-img {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 62%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 38%);
+  mask-image: linear-gradient(to right, transparent 0%, black 38%);
+  pointer-events: none;
+}
+.banner-img img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+.banner-title-block {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 3rem 5rem 3.5rem;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem;
+}
+.banner-eyebrow {
+  font-size: 0.7rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--lime); display: flex; align-items: center; gap: 0.55rem;
+  margin-bottom: 0.7rem;
+}
+.banner-eyebrow::before { content:''; display:inline-block; width:20px; height:1px; background:var(--lime); opacity:0.6; }
+.banner-game-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: clamp(2.4rem, 6vw, 5rem); letter-spacing: -0.04em;
+  color: var(--text); line-height: 0.95;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.6);
+}
+.banner-game-title em { color: var(--lime); font-style: normal; }
+.banner-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+.banner-tag {
+  font-size: 0.65rem; font-weight: 500; letter-spacing: 0.09em;
+  padding: 0.28rem 0.75rem; border-radius: 100px;
+  border: 1px solid rgba(200,240,60,0.35); color: var(--lime);
+  background: rgba(200,240,60,0.06);
+}
+
+/* ── main content ── */
+main {
+  position: relative; z-index: 2;
+  max-width: 900px; margin: 0 auto; padding: 4rem 3.5rem 7rem;
+}
+
+/* ── section label ── */
+.label {
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--lime); display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1.5rem;
+}
+.label::before { content:''; display:inline-block; width:20px; height:1px; background:var(--lime); opacity:0.5; }
+
+/* ── info boxes ── */
+.info-row {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3.5rem;
+}
+.info-box {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 1rem 1.4rem; min-width: 130px;
+  transition: border-color 0.25s, transform 0.2s;
+  position: relative; overflow: hidden;
+}
+.info-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 1px; background: linear-gradient(to right, var(--lime), transparent);
+  opacity: 0; transition: opacity 0.25s;
+}
+.info-box:hover { border-color: var(--border-hi); transform: translateY(-2px); }
+.info-box:hover::before { opacity: 0.6; }
+.info-box-label {
+  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--lime); display: block; margin-bottom: 0.35rem;
+}
+.info-box-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.05rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
+}
+
+/* ── divider ── */
+.section-divider {
+  height: 1px; background: var(--border); margin: 3rem 0;
+  position: relative;
+}
+.section-divider::after {
+  content: ''; position: absolute; left: 0; top: 0;
+  width: 60px; height: 1px; background: var(--lime); opacity: 0.4;
+}
+
+/* ── description ── */
+.description {
+  font-size: 1rem; font-weight: 300; color: var(--text-muted);
+  line-height: 1.9; margin-bottom: 3rem;
+}
+.description p + p { margin-top: 1.1rem; }
+
+/* ── play button ── */
+.play-btn {
+  display: inline-flex; align-items: center; gap: 0.65rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+  letter-spacing: 0.07em; padding: 0.9rem 2.2rem;
+  background: var(--lime); color: var(--bg); border-radius: 4px;
+  text-decoration: none; margin-bottom: 5rem;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  border: none;
+}
+.play-btn:hover {
+  background: #d6f75a; transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(200,240,60,0.25);
+}
+.play-btn-icon { font-size: 1rem; }
+
+/* ── gallery ── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+.gallery-item {
+  aspect-ratio: 16/10; border-radius: 4px; overflow: hidden;
+  border: 1px solid rgba(200,240,60,0.2);
+  background: var(--bg3); background-size: cover; background-position: center;
+  cursor: zoom-in; position: relative;
+  transition: transform 0.35s ease, border-color 0.3s;
+}
+.gallery-item::after {
+  content: '⤢'; position: absolute; bottom: 0.6rem; right: 0.7rem;
+  font-size: 0.8rem; color: var(--lime); opacity: 0;
+  transition: opacity 0.25s;
+}
+.gallery-item:hover { transform: scale(1.02); border-color: rgba(200,240,60,0.45); }
+.gallery-item:hover::after { opacity: 1; }
+
+/* ── lightbox ── */
+#lightbox {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(7,12,23,0.96); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+#lightbox.open { opacity: 1; pointer-events: all; }
+#lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 4px; object-fit: contain; }
+#lightbox-close {
+  position: absolute; top: 1.4rem; right: 2rem;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-muted); font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+#lightbox-close:hover { border-color: var(--lime); color: var(--lime); }
+
+/* ── footer ── */
+footer {
+  position: relative; z-index: 2;
+  padding: 1.8rem 3.5rem; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--text-muted); text-decoration: none; letter-spacing: -0.01em; }
+.footer-logo span { color: var(--lime); }
+.footer-note { font-size: 0.75rem; color: rgba(107,103,96,0.5); }
+.footer-socials { display: flex; gap: 1.4rem; }
+.footer-socials a { font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-socials a:hover { color: var(--text); }
+
+/* ── reveal ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── responsive ── */
+@media (max-width: 768px) {
+  nav { padding: 1.1rem 1.5rem; }
+  .banner-title-block { padding: 2rem 1.5rem 2.5rem; flex-direction: column; align-items: flex-start; }
+  .banner-tags { justify-content: flex-start; }
+  main { padding: 3rem 1.5rem 5rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="particle-canvas"></canvas>
+
+<!-- ── Nav ── -->
+<nav id="navbar">
+  <a href="kanye-wallace-portfolio-doc.html" class="nav-logo">KW<span>.</span></a>
+  <!-- ↑ UPDATE href to point to your portfolio filename -->
+  <a href="kanye-wallace-portfolio-doc.html" class="nav-back">
+    <span class="nav-back-arrow">←</span> Back to Portfolio
+  </a>
+</nav>
+
+<!-- ── Banner ── -->
+<div class="banner">
+  <!-- ↓ REPLACE src with your banner/character image -->
+  <div class="banner-img">
+    <img src="Baldurs Rush/Baldurs Rush Banner.webp" alt="Baldur's Rush">
+  </div>
+  <div class="banner-overlay"></div>
+  <div class="banner-title-block">
+    <div>
+      <!-- ↓ UPDATE eyebrow tags -->
+      <div class="banner-eyebrow">Racing · Strategy · Third Person · Multiplayer</div>
+      <!-- ↓ UPDATE game title — wrap the key word in <em> for lime colour -->
+      <h1 class="banner-game-title"><em>Baldur's</em> Rush</h1>
+    </div>
+    <div class="banner-tags">
+      <!-- ↓ ADD / REMOVE tags to match your game -->
+      <span class="banner-tag">Team</span>
+      <span class="banner-tag">Unreal Engine</span>
+      <span class="banner-tag">2025</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main content ── -->
+<main>
+
+  <!-- Info boxes -->
+  <div class="label reveal">At a Glance</div>
+  <div class="info-row reveal">
+
+    <!-- Type box — always present -->
+    <div class="info-box">
+      <span class="info-box-label">Type</span>
+      <!-- ↓ UPDATE: Solo / Team / Game Jam -->
+      <span class="info-box-value">Team</span>
+    </div>
+
+    <!-- Engine box — always present -->
+    <div class="info-box">
+      <span class="info-box-label">Engine</span>
+      <!-- ↓ UPDATE: Unity / Unreal Engine / Godot -->
+      <span class="info-box-value">Unreal Engine</span>
+    </div>
+
+    <!-- Team Size box — DELETE this entire block if the project is NOT a team project -->
+    <div class="info-box">
+      <span class="info-box-label">Team Size</span>
+      <span class="info-box-value">11 people</span>
+    </div>
+
+    <!-- Year box — optional, remove if not needed -->
+    <div class="info-box">
+      <span class="info-box-label">Year</span>
+      <!-- ↓ UPDATE year -->
+      <span class="info-box-value">2025</span>
+    </div>
+
+    <!-- Platform box — optional -->
+    <div class="info-box">
+      <span class="info-box-label">Platform</span>
+      <!-- ↓ UPDATE: PC / Web / Mobile -->
+      <span class="info-box-value">PC &amp; Console</span>
+    </div>
+
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Description -->
+  <div class="label reveal">About the Game</div>
+  <div class="description reveal">
+    <!-- ↓ REPLACE with your own description. Split into paragraphs as needed. -->
+    <p>Baldur's Rush is a competitive racing game within a dark fantasy setting, combining themes of cursed myth with the thrill of fast paced kart competition. Your racing is based on skill however your advancements are dealt with luck.</p>
+    <p>Choose from a selection of karts that have different capabilities. Avoid obstacles such as alcohol spills that can make you lose control. Use spells to knock your opponents off course, and strategically manipulate your surroundings!</p>
+    <p>----CREDITS----</p>
+    <p>Game Designers: Kanye Wallace</p>
+    <p>Technical Artists: Hana Maqbool</p>
+    <p>Character Creators: Faye Hill</p>
+    <p>Game Artists: Lilli Sempers, Dawid Ostrowski, Mahiya Mohchin, Mia Cliff, Phillippe Lleses, Alania Wakerell, Tin Huynh, Gabriel Tomala</p>
+  </div>
+
+  <!-- Itch.io link -->
+  <!-- ↓ UPDATE href to your itch.io page URL -->
+  <a href="https://spargo.itch.io/" class="play-btn reveal" target="_blank" rel="noopener">
+    View all on Itch.io <span class="play-btn-icon">↗</span>
+  </a>
+
+  <div class="section-divider"></div>
+
+  <!-- Gallery -->
+  <div class="label reveal">Gallery</div>
+  <div class="gallery-grid reveal" id="gallery">
+
+    <!--
+      ↓ For each screenshot, copy one of these divs and update the background-image URL.
+      You can also use <img> tags if you prefer — both work.
+    -->
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot1.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot1.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot2.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot2.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot3.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot3.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot4.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot4.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot5.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot5.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot6.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot6.webp"></div>
+    <div class="gallery-item" style="background-image:url('Baldurs Rush/Baldurs\ Rush\ Screenshot7.webp')" data-src="Baldurs Rush/Baldurs\ Rush\ Screenshot7.webp"></div>
+
+  </div>
+
+</main>
+
+<!-- ── Lightbox ── -->
+<div id="lightbox">
+  <button id="lightbox-close" aria-label="Close">✕</button>
+  <img id="lightbox-img" src="" alt="Screenshot">
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <a href="kanye-wallace-portfolio-doc.html" class="footer-logo">KW<span>.</span></a>
+  <div class="footer-socials">
+    <!-- ↓ UPDATE with your real profile URLs -->
+    <a href="https://www.artstation.com/kanyewallace" target="_blank" rel="noopener">ArtStation</a>
+    <a href="https://www.linkedin.com/in/kanyewallace/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://spargo.itch.io/" target="_blank" rel="noopener">Itch.io</a>
+  </div>
+  <span class="footer-note">Kanye Wallace © 2026</span>
+</footer>
+
+<script>
+// ── Custom cursor ──────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+let dotScale=1, dotTarget=1;
+let ringScale=1, ringTarget=1;
+
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('button,a,[role="button"],.gallery-item')) { dotTarget=0; ringTarget=1.8; }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('button,a,[role="button"],.gallery-item')) { dotTarget=1; ringTarget=1; }
+});
+(function lp() {
+  dotScale  += (dotTarget  - dotScale)  * 0.18;
+  ringScale += (ringTarget - ringScale) * 0.13;
+  cursor.style.transform = `translate(${mx-4}px,${my-4}px) scale(${dotScale})`;
+  rx += (mx-rx)*0.13; ry += (my-ry)*0.13;
+  const alpha = 0.4 + (ringScale-1)*0.55;
+  ring.style.transform   = `translate(${rx-15}px,${ry-15}px) scale(${ringScale})`;
+  ring.style.borderColor = `rgba(200,240,60,${Math.min(alpha,1)})`;
+  ring.style.boxShadow   = ringScale > 1.1
+    ? `0 0 ${(ringScale-1)*18}px rgba(200,240,60,${(ringScale-1)*0.25})`
+    : 'none';
+  requestAnimationFrame(lp);
+})();
+
+// ── Particles ─────────────────────────────────────────────────
+const canvas = document.getElementById('particle-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, pts = [];
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+function P() {
+  this.reset = function() {
+    this.x = Math.random()*W; this.y = H+10;
+    this.s = Math.random()*3+0.4;
+    this.vx = (Math.random()-0.5)*0.3;
+    this.vy = -(Math.random()*0.4+0.1);
+    this.life = 0; this.max = Math.random()*1200+600;
+    this.wobble = Math.random()*Math.PI*2;
+    this.wobbleSpeed = 0.006+Math.random()*0.009;
+    this.wobbleAmp   = 0.2+Math.random()*0.4;
+    const r = Math.random();
+    if      (r < 0.4) this.c = [200,240,60];
+    else if (r < 0.6) this.c = [100,160,255];
+    else if (r < 0.8) this.c = [240,236,227];
+    else               this.c = [160,210,255];
+    this.shape = Math.random() < 0.15 ? 'square' : 'circle';
+    this.trail = [];
+  };
+  this.reset(); this.y = Math.random()*H; this.life = Math.random()*this.max;
+}
+for (let i=0; i<120; i++) pts.push(new P());
+(function anim() {
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(p => {
+    p.life++; p.wobble += p.wobbleSpeed;
+    p.x += p.vx + Math.sin(p.wobble)*p.wobbleAmp; p.y += p.vy;
+    if (p.life > p.max || p.y < -12) p.reset();
+    const prog = p.life/p.max;
+    const a = Math.sin(prog*Math.PI)*0.6;
+    const [r,g,b] = p.c;
+    p.trail.push({x:p.x,y:p.y,a});
+    if (p.trail.length > 6) p.trail.shift();
+    p.trail.forEach((t,i) => {
+      ctx.beginPath(); ctx.arc(t.x,t.y,p.s*(i/p.trail.length)*0.6,0,Math.PI*2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${(i/p.trail.length)*a*0.35})`; ctx.fill();
+    });
+    ctx.globalAlpha = a;
+    if (p.shape === 'square') {
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(p.x-p.s/2, p.y-p.s/2, p.s, p.s);
+    } else {
+      const grd = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s*2.5);
+      grd.addColorStop(0,`rgba(${r},${g},${b},0.6)`);
+      grd.addColorStop(1,`rgba(${r},${g},${b},0)`);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.s*2.5,0,Math.PI*2);
+      ctx.fillStyle = grd; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.s,0,Math.PI*2);
+      ctx.fillStyle = `rgb(${r},${g},${b})`; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  });
+  requestAnimationFrame(anim);
+})();
+
+// ── Nav scroll ────────────────────────────────────────────────
+window.addEventListener('scroll', () =>
+  document.getElementById('navbar').classList.toggle('scrolled', scrollY > 50)
+);
+
+// ── Reveal on scroll ──────────────────────────────────────────
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.transitionDelay = (i % 4) * 0.08 + 's';
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── Gallery lightbox ──────────────────────────────────────────
+const lightbox = document.getElementById('lightbox');
+const lbImg    = document.getElementById('lightbox-img');
+const lbClose  = document.getElementById('lightbox-close');
+
+document.querySelectorAll('.gallery-item').forEach(item => {
+  item.addEventListener('click', () => {
+    lbImg.src = item.dataset.src.replace(/\\/g, '');
+    lightbox.classList.add('open');
+  });
+});
+lbClose.addEventListener('click', () => { lightbox.classList.remove('open'); lbImg.src=''; });
+lightbox.addEventListener('click', e => { if (e.target === lightbox) { lightbox.classList.remove('open'); lbImg.src=''; } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { lightbox.classList.remove('open'); lbImg.src=''; } });
+</script>
+</body>
+</html>
