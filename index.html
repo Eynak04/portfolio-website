@@ -264,18 +264,26 @@
     background: var(--bg3); overflow: hidden;
     display: flex; align-items: center; justify-content: center;
   }
-  .about-frame-inner::before {
-    content: ''; position: absolute; inset: 0;
+  .about-photo {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block; border-radius: 2px;
+  }
+  .about-photo-placeholder {
+    position: absolute; inset: 0;
     background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                       linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
     background-size: 28px 28px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .about-mono {
+  .about-upload-label {
     font-family: 'DM Sans', monospace; font-size: 0.68rem; font-weight: 300;
-    letter-spacing: 0.04em; color: var(--text-muted); line-height: 2;
-    text-align: center; position: relative; z-index: 1; opacity: 0.5;
+    letter-spacing: 0.08em; color: var(--text-muted); text-align: center;
+    opacity: 0.5; line-height: 2; cursor: pointer; padding: 1rem;
+    transition: opacity 0.2s;
   }
-  .about-mono strong { color: var(--lime); font-weight: 400; display: block; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .about-upload-label:hover { opacity: 0.85; }
+  .about-upload-label strong { color: var(--lime); font-weight: 400; display: block; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  #about-photo-input { display: none; }
   .about-accent {
     position: absolute; bottom: -1px; left: -1px;
     width: 40px; height: 40px;
@@ -608,15 +616,10 @@
     <div class="about-frame">
       <div class="about-accent-tr"></div>
       <div class="about-accent"></div>
-      <div class="about-frame-inner">
-        <div class="about-mono">
-          <strong>KW</strong>
-          game.designer<br>
-          world.builder<br>
-          puzzle.designer<br>
-          <br>
-          est. 2019<br>
-          london, uk
+      <div class="about-frame-inner" id="about-frame-inner">
+        <img class="about-photo" id="about-photo" src="Kanye Wallace About Me.webp" alt="Kanye Wallace">
+        <div class="about-photo-placeholder" id="about-placeholder">
+          <label for="about-photo-input" class="about-upload-label">
         </div>
       </div>
     </div>
@@ -968,6 +971,21 @@ function rotateTitles() {
       heroEyebrow.style.transition = '';
     }, 500);
   }, 400);
+}
+
+// about photo upload
+const photoInput = document.getElementById('about-photo-input');
+const photoImg   = document.getElementById('about-photo');
+const photoPlaceholder = document.getElementById('about-placeholder');
+if (photoInput) {
+  photoInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    photoImg.src = url;
+    photoImg.style.display = 'block';
+    photoPlaceholder.style.display = 'none';
+  });
 }
 
 setInterval(rotateTitles, 2800);
