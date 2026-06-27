@@ -196,7 +196,7 @@
     position: relative; overflow: hidden; cursor: none;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    min-height: 420px;
+    min-height: 320px;
     background: var(--bg3);
     border: 1px solid rgba(200,240,60,0.18);
     transition: border-color 0.4s;
@@ -210,7 +210,7 @@
   /* Image pane — must have explicit height so position:absolute children can fill it */
   .card-image-pane {
     position: relative; overflow: hidden;
-    min-height: 420px;
+    min-height: 320px;
   }
   .card-bg {
     position: absolute; inset: 0; background-size: cover; background-position: center;
@@ -231,12 +231,13 @@
 
   /* Text pane */
   .card-text-pane {
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 3rem 3.5rem 3rem 2.5rem;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+    padding: 2.5rem 3rem;
     position: relative;
   }
   .project-card:nth-child(even) .card-text-pane {
-    padding: 3rem 2.5rem 3rem 3.5rem;
+    padding: 2.5rem 3rem;
   }
 
   /* Index marker */
@@ -247,7 +248,7 @@
     margin-bottom: 1.2rem; display: block;
   }
 
-  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; justify-content: center; }
   .tag {
     font-size: 0.62rem; font-weight: 500; letter-spacing: 0.09em;
     padding: 0.2rem 0.6rem; border-radius: 100px;
@@ -544,7 +545,7 @@
     <!-- 01 — image left -->
     <button class="project-card reveal" data-href="project-umbrae-page.html">
       <div class="card-image-pane">
-        <div class="card-bg bg-c1" style="background-image:url('ProjectUMBRAE\ Poster\ Featured.png'); background-size:cover; background-position:center;"></div>
+        <div class="card-bg bg-c1" style="background-image:url('Project Umbrae/Project\ UMBRAE\ Featured\ Banner.webp'); background-size:cover; background-position:center;"></div>
         <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
@@ -574,7 +575,7 @@
     <!-- 03 — image left -->
     <button class="project-card reveal" data-href="realm-page.html">
       <div class="card-image-pane">
-        <div class="card-bg bg-c7" style="background-image:url('Realm\ Poster.png'); background-size:cover; background-position:center;"></div>
+        <div class="card-bg bg-c7" style="background-image:url('Realm/Realm\ Featured\ Banner.webp'); background-size:cover; background-position:center;"></div>
         <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
