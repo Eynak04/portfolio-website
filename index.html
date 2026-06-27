@@ -181,34 +181,119 @@
 
   /* projects */
   #projects { padding: 6rem 3.5rem; }
-  .projects-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 8px; max-width: 1280px; margin: 0 auto;
+
+  /* ── Featured layout: full-width vertical stack ── */
+  .featured-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 1280px;
+    margin: 0 auto;
   }
-  .project-card { position: relative; aspect-ratio: 630/500; overflow: hidden; cursor: none; background: var(--bg3); border: 1px solid rgba(200,240,60,0.35); }
-  .card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: brightness(1.0) saturate(1.0); transition: filter 0.5s ease, transform 0.7s ease; }
-  .project-card:hover .card-bg { filter: brightness(0.35) saturate(0.6); transform: scale(1.04); }
-  .card-gradient { position: absolute; inset: 0; background: linear-gradient(to top, rgba(7,12,23,0.95) 0%, rgba(7,12,23,0.25) 55%, transparent 100%); opacity: 0; transition: opacity 0.4s ease; }
-  .project-card:hover .card-gradient { opacity: 1; }
-  .card-glow { position: absolute; inset: 0; border: 1px solid transparent; transition: border-color 0.35s, box-shadow 0.35s; }
-  .project-card:hover .card-glow { border-color: var(--border-hi); box-shadow: inset 0 0 50px rgba(200,240,60,0.05); }
-  .card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.8rem; transform: translateY(6px); transition: transform 0.35s ease; }
-  .project-card:hover .card-content { transform: translateY(0); }
-  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.65rem; }
+
+  /* Each row: image left, text right */
+  .project-card {
+    position: relative; overflow: hidden; cursor: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 420px;
+    background: var(--bg3);
+    border: 1px solid rgba(200,240,60,0.18);
+    transition: border-color 0.4s;
+  }
+  .project-card:hover { border-color: rgba(200,240,60,0.5); }
+
+  /* Alternate: odd cards image-left, even cards image-right */
+  .project-card:nth-child(even) { direction: rtl; }
+  .project-card:nth-child(even) > * { direction: ltr; }
+
+  /* Image pane */
+  .card-image-pane {
+    position: relative; overflow: hidden;
+  }
+  .card-bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    transition: transform 0.8s ease, filter 0.5s ease;
+    filter: brightness(0.7) saturate(0.85);
+  }
+  .project-card:hover .card-bg { transform: scale(1.05); filter: brightness(0.55) saturate(0.7); }
+
+  /* Edge gradient — bleeds image into the text pane */
+  .card-edge-fade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, transparent 60%, var(--bg3) 100%);
+    pointer-events: none;
+  }
+  .project-card:nth-child(even) .card-edge-fade {
+    background: linear-gradient(to left, transparent 60%, var(--bg3) 100%);
+  }
+
+  /* Text pane */
+  .card-text-pane {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 3rem 3.5rem 3rem 2.5rem;
+    position: relative;
+  }
+  .project-card:nth-child(even) .card-text-pane {
+    padding: 3rem 2.5rem 3rem 3.5rem;
+  }
+
+  /* Index marker */
+  .card-index {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--lime); opacity: 0.6;
+    margin-bottom: 1.2rem; display: block;
+  }
+
+  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
   .tag {
-    font-size: 0.65rem; font-weight: 500; letter-spacing: 0.08em;
+    font-size: 0.62rem; font-weight: 500; letter-spacing: 0.09em;
     padding: 0.2rem 0.6rem; border-radius: 100px;
-    border: 1px solid rgba(200,240,60,0.3); color: var(--lime);
-    opacity: 0; transform: translateY(5px);
-    transition: opacity 0.25s 0.05s, transform 0.25s 0.05s;
+    border: 1px solid rgba(200,240,60,0.28); color: var(--lime);
   }
-  .project-card:hover .tag { opacity: 1; transform: translateY(0); }
-  .card-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.4rem; letter-spacing: -0.02em; color: var(--text); line-height: 1.15; opacity: 0; transform: translateY(6px); transition: opacity 0.3s 0.08s ease, transform 0.3s 0.08s ease; }
-  .project-card:hover .card-title  { opacity: 1; transform: translateY(0); }
-  .card-desc { font-size: 0.84rem; font-weight: 300; color: var(--text-muted); margin-top: 0.45rem; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease; opacity: 0; }
-  .project-card:hover .card-desc { max-height: 80px; opacity: 1; }
-  .card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; width: 34px; height: 34px; border: 1px solid rgba(200,240,60,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--lime); font-size: 0.9rem; opacity: 0; transform: scale(0.7) rotate(-45deg); transition: opacity 0.3s, transform 0.3s; }
-  .project-card:hover .card-arrow { opacity: 1; transform: scale(1) rotate(0deg); }
+
+  .card-title {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    letter-spacing: -0.025em; color: var(--text); line-height: 1.08;
+    margin-bottom: 1rem;
+  }
+
+  .card-desc {
+    font-size: 0.9rem; font-weight: 300; color: var(--text-muted);
+    line-height: 1.7; max-width: 38ch;
+  }
+
+  /* Arrow link */
+  .card-arrow {
+    margin-top: 1.8rem;
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--lime); text-transform: uppercase;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .card-arrow::after {
+    content: '↗'; font-size: 1rem;
+    transition: transform 0.25s ease;
+  }
+  .project-card:hover .card-arrow { opacity: 1; transform: translateY(0); }
+  .project-card:hover .card-arrow::after { transform: translate(2px, -2px); }
+
+  /* Dividing line between cards */
+  .featured-stack .project-card + .project-card {
+    border-top: none;
+  }
+
+  @media (max-width: 860px) {
+    .project-card { grid-template-columns: 1fr; min-height: auto; }
+    .project-card:nth-child(even) { direction: ltr; }
+    .card-image-pane { aspect-ratio: 16/9; min-height: 240px; }
+    .card-edge-fade { background: linear-gradient(to bottom, transparent 60%, var(--bg3) 100%) !important; }
+    .card-text-pane,
+    .project-card:nth-child(even) .card-text-pane { padding: 2rem 1.5rem; }
+  }
 
   /* bg tints per card */
   .bg-c1 { background: linear-gradient(135deg, #0f1a0a 0%, #0a120f 50%, #08080a 100%); }
@@ -454,158 +539,62 @@
     <div class="section-rule"></div>
   </div>
 
-  <div class="filter-bar" id="filter-bar">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="solo">Solo Projects</button>
-    <button class="filter-btn" data-filter="team">Team Projects</button>
-    <button class="filter-btn" data-filter="jam">Game Jams</button>
-    <button class="filter-btn" data-filter="puzzle">Puzzle</button>
-    <button class="filter-btn" data-filter="platformer">Platformer</button>
-    <button class="filter-btn" data-filter="horror">Horror</button>
-    <button class="filter-btn" data-filter="survival">Survival</button>
-    <button class="filter-btn" data-filter="simulation">Simulation</button>
-    <button class="filter-btn" data-filter="rpg">RPG</button>
-    <button class="filter-btn" data-filter="adventure">Adventure</button>
-    <button class="filter-btn" data-filter="racing">Racing</button>
-    <button class="filter-btn" data-filter="shooter">Shooter</button>
-    <button class="filter-btn" data-filter="strategy">Strategy</button>
-    <button class="filter-btn" data-filter="sandbox">Sandbox</button>
-  </div>
+  <div class="featured-stack">
 
-  <div class="projects-grid">
-
-    <button class="project-card reveal" data-tags="team horror puzzle" data-href="project-umbrae-page.html">
-      <div class="card-bg bg-c1" style="background-image:url('ProjectUMBRAE\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
+    <!-- 01 — image left -->
+    <button class="project-card reveal" data-href="project-umbrae-page.html">
+      <div class="card-image-pane">
+        <div class="card-bg bg-c1" style="background-image:url('ProjectUMBRAE\ Poster.png');"></div>
+        <div class="card-edge-fade"></div>
+      </div>
+      <div class="card-text-pane">
+        <span class="card-index">01</span>
         <div class="card-tags"><span class="tag">Team</span><span class="tag">Horror</span><span class="tag">Puzzle</span></div>
         <h3 class="card-title">Project UMBRAE</h3>
-        <p class="card-desc">First person psychological horror puzzle game - Complete the puzzles and unlock the secrets.</p>
+        <p class="card-desc">First person psychological horror puzzle game — complete the puzzles and unlock the secrets.</p>
+        <span class="card-arrow">View Project</span>
       </div>
     </button>
 
-    <button class="project-card reveal" data-tags="solo simulation">
-      <div class="card-bg bg-c2"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Simulation</span></div>
-        <h3 class="card-title">Back In The Rooms</h3>
-        <p class="card-desc">A backrooms inspired simulation. You never know where you end up but be sure to make notes by taking pictures.</p>
+    <!-- 02 — image right (alternates via nth-child) -->
+    <button class="project-card reveal" data-href="as-you-left-it-page.html">
+      <div class="card-image-pane">
+        <div class="card-bg bg-c3" style="background-image:url('AsYouLeftIt\ Poster.png');"></div>
+        <div class="card-edge-fade"></div>
       </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo puzzle platformer" data-href="as-you-left-it-page.html">
-      <div class="card-bg bg-c3" style="background-image:url('AsYouLeftIt\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
+      <div class="card-text-pane">
+        <span class="card-index">02</span>
         <div class="card-tags"><span class="tag">Solo</span><span class="tag">Puzzle</span><span class="tag">Platformer</span></div>
         <h3 class="card-title">As You Left It</h3>
         <p class="card-desc">One simple temperature switch and face the new puzzles that the world offers.</p>
+        <span class="card-arrow">View Project</span>
       </div>
     </button>
 
-    <button class="project-card reveal" data-tags="team jam survival" data-href="shattered-city-page.html">
-      <div class="card-bg bg-c4" style="background-image:url('ShatteredCity\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Team</span><span class="tag">Jam</span><span class="tag">Survival</span></div>
-        <h3 class="card-title">Shattered City</h3>
-        <p class="card-desc">City overrun with despair and darkness. Collect the mask pieces whilst avoiding the beaming lights.</p>
+    <!-- 03 — image left -->
+    <button class="project-card reveal" data-href="realm-page.html">
+      <div class="card-image-pane">
+        <div class="card-bg bg-c7" style="background-image:url('Realm\ Poster.png');"></div>
+        <div class="card-edge-fade"></div>
       </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="team racing strategy" data-href="baldurs-rush-page.html">
-      <div class="card-bg bg-c5" style="background-image:url('Baldur\'s\ Rush\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Team</span><span class="tag">Racing</span><span class="tag">Strategy</span></div>
-        <h3 class="card-title">Baldur's Rush</h3>
-        <p class="card-desc">A Baldur's Gate 3 inspired game. Select your kart, race against your opponents and use the item boxes in order to achieve first place.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo puzzle strategy" data-href="polar-fields-page.html">
-      <div class="card-bg bg-c6" style="background-image:url('PolarFields\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Puzzle</span><span class="tag">Strategy</span></div>
-        <h3 class="card-title">Polar Fields</h3>
-        <p class="card-desc">Use the magnetic fields in order to advance through the map. Solve the puzzles in order to find your way to the next section.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo survival platformer shooter" data-href="realm-page.html">
-      <div class="card-bg bg-c7" style="background-image:url('Realm\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
+      <div class="card-text-pane">
+        <span class="card-index">03</span>
         <div class="card-tags"><span class="tag">Solo</span><span class="tag">Survival</span><span class="tag">Platformer</span><span class="tag">Shooter</span></div>
         <h3 class="card-title">Realm</h3>
-        <p class="card-desc">You have the ability to switch back and forth through human form and ghost form but each form makes you deal with a different entity.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="team adventure rpg" data-href="near-and-far-page.html">
-      <div class="card-bg bg-c8" style="background-image:url('NearAndFar\ Poster.png'); background-size:cover; background-position:center;"></div>      
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Team</span><span class="tag">Adventure</span><span class="tag">RPG</span></div>
-        <h3 class="card-title">Near &amp; Far</h3>
-        <p class="card-desc">The ancient ruins swarm with legendary artifacts that possess riches, but where there is good, encounter the bad.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo puzzle platformer" data-href="project-n-page.html">
-      <div class="card-bg bg-c9" style="background-image:url('ProjectN\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Puzzle</span><span class="tag">Platformer</span></div>
-        <h3 class="card-title">Project N</h3>
-        <p class="card-desc">N for Nanotechnology. Wield an electromagnetic gun that transports the environment objects, strikes out enemies and electrifies doors.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo sandbox simulation" data-href="default-page.html">
-      <div class="card-bg bg-c10" style="background-image:url('Default\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Sandbox</span><span class="tag">Simulation</span></div>
-        <h3 class="card-title">Default</h3>
-        <p class="card-desc">Endless terrain full of the default gameobjects that can be used to create new objects. Beware that if you move too far away from newly created designs, the game resets that land to its DEFAULT stage.</p>
-      </div>
-    </button>
-
-    <button class="project-card reveal" data-tags="solo survival sandbox" data-href="snow-globe-page.html">
-      <div class="card-bg bg-c11" style="background-image:url('Snow\ Globe\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Survival</span><span class="tag">Sandbox</span></div>
-        <h3 class="card-title">Snow Globe</h3>
-        <p class="card-desc">Survive as long as you can with the harsh winter, polar predators and your only source of life, your own house.</p>
-      </div>
-    </button>
-    
-    <button class="project-card reveal" data-tags="solo puzzle platformer" data-href="cloudstruck-page.html">
-      <div class="card-bg bg-c11" style="background-image:url('CloudStruck\ Poster.png'); background-size:cover; background-position:center;"></div>
-      <div class="card-gradient"></div><div class="card-glow"></div>
-      <div class="card-arrow">↗</div>
-      <div class="card-content">
-        <div class="card-tags"><span class="tag">Solo</span><span class="tag">Puzzle</span><span class="tag">Platformer</span></div>
-        <h3 class="card-title">CloudStruck</h3>
-        <p class="card-desc">Collect recycling and place them in bins, avoid the moving clouds. Enjoy your win!</p>
+        <p class="card-desc">Switch between human and ghost form — each brings a different entity to survive.</p>
+        <span class="card-arrow">View Project</span>
       </div>
     </button>
 
   </div>
+
+  <div style="text-align:center; margin-top: 3.5rem;" class="reveal">
+    <a href="kanye-wallace-all-projects.html" class="btn btn-outline" style="font-size:0.82rem; letter-spacing:0.09em; padding: 0.9rem 2.4rem; border-color: rgba(200,240,60,0.35); display:inline-flex; align-items:center; gap:0.6rem;">
+      View All Projects <span style="color:var(--lime); font-size:1rem;">↗</span>
+    </a>
+    <p style="margin-top:0.9rem; font-size:0.72rem; letter-spacing:0.1em; color:var(--text-muted);">12 PROJECTS — ALL GENRES</p>
+  </div>
+
 </section>
 
 <div class="section-divider"><span>02 — About</span></div>
@@ -905,22 +894,10 @@ const countObs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.5 });
 document.querySelectorAll('.stat-box').forEach(box => countObs.observe(box));
-// project tag filter
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const filter = btn.dataset.filter;
-    document.querySelectorAll('.project-card').forEach(card => {
-      if (filter === 'all' || (card.dataset.tags || '').includes(filter)) {
-        card.classList.remove('hidden');
-      } else {
-        card.classList.add('hidden');
-      }
-    });
-  });
+// project card navigation — cards with data-href go to their linked page
+document.querySelectorAll('.project-card[data-href]').forEach(card => {
+  card.addEventListener('click', () => { window.location.href = card.dataset.href; });
 });
-
 // hero title rotation — dot tracks the pill width as it animates
 const heroTitles = [
   'Game Designer',
@@ -989,12 +966,6 @@ if (photoInput) {
 }
 
 setInterval(rotateTitles, 2800);
-// project card navigation — cards with data-href go to their linked page
-document.querySelectorAll('.project-card[data-href]').forEach(card => {
-  card.addEventListener('click', () => {
-    window.location.href = card.dataset.href;
-  });
-});
 </script>
 </body>
 </html>
