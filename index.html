@@ -207,9 +207,10 @@
   .project-card:nth-child(even) { direction: rtl; }
   .project-card:nth-child(even) > * { direction: ltr; }
 
-  /* Image pane */
+  /* Image pane — must have explicit height so position:absolute children can fill it */
   .card-image-pane {
     position: relative; overflow: hidden;
+    min-height: 420px;
   }
   .card-bg {
     position: absolute; inset: 0; background-size: cover; background-position: center;
@@ -289,7 +290,7 @@
   @media (max-width: 860px) {
     .project-card { grid-template-columns: 1fr; min-height: auto; }
     .project-card:nth-child(even) { direction: ltr; }
-    .card-image-pane { aspect-ratio: 16/9; min-height: 240px; }
+    .card-image-pane { aspect-ratio: 16/9; min-height: 220px; }
     .card-edge-fade { background: linear-gradient(to bottom, transparent 60%, var(--bg3) 100%) !important; }
     .card-text-pane,
     .project-card:nth-child(even) .card-text-pane { padding: 2rem 1.5rem; }
@@ -315,7 +316,7 @@
   }
   #hero-title.fade-out { opacity: 0; transform: translateY(-7px); }
 
-  /* filter bar */
+  /* filter bar (all-projects page only — kept for reference) */
   .filter-bar {
     display: flex; flex-wrap: wrap; gap: 0.5rem;
     justify-content: center; margin-bottom: 2.5rem;
@@ -330,7 +331,6 @@
   }
   .filter-btn:hover { border-color: rgba(200,240,60,0.4); color: var(--text); }
   .filter-btn.active { border-color: var(--lime); color: var(--bg); background: var(--lime); }
-  .project-card { transition: opacity 0.35s ease, transform 0.35s ease; }
   .project-card.hidden {
     opacity: 0 !important; transform: scale(0.95) !important;
     pointer-events: none; position: absolute;
@@ -544,7 +544,7 @@
     <!-- 01 — image left -->
     <button class="project-card reveal" data-href="project-umbrae-page.html">
       <div class="card-image-pane">
-        <div class="card-bg bg-c1" style="background-image:url('ProjectUMBRAE\ Poster\ Featured.png');"></div>
+        <div class="card-bg bg-c1" style="background-image:url('ProjectUMBRAE\ Poster\ Featured.png'); background-size:cover; background-position:center;"></div>
         <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
@@ -559,7 +559,7 @@
     <!-- 02 — image right (alternates via nth-child) -->
     <button class="project-card reveal" data-href="polar-fields-page.html">
       <div class="card-image-pane">
-        <div class="card-bg bg-c3" style="background-image:url('PolarFields\ Poster.png');"></div>
+        <div class="card-bg bg-c3" style="background-image:url('PolarFields\ Poster.png'); background-size:cover; background-position:center;"></div>
         <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
@@ -574,7 +574,7 @@
     <!-- 03 — image left -->
     <button class="project-card reveal" data-href="realm-page.html">
       <div class="card-image-pane">
-        <div class="card-bg bg-c7" style="background-image:url('Realm\ Poster.png');"></div>
+        <div class="card-bg bg-c7" style="background-image:url('Realm\ Poster.png'); background-size:cover; background-position:center;"></div>
         <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
