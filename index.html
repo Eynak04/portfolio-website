@@ -45,7 +45,7 @@
   /* suppress browser hand cursor everywhere */
   *, button, a, [role="button"] { cursor: none !important; }
   /* reset native button styles on project cards */
-  button.project-card { appearance: none; -webkit-appearance: none; font: inherit; padding: 0; text-align: left; display: block; width: 100%; }
+  button.project-card { appearance: none; -webkit-appearance: none; font: inherit; padding: 0; text-align: left; width: 100%; }
 
   /* particles */
   #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
@@ -182,8 +182,8 @@
   /* projects */
   #projects { padding: 6rem 3.5rem; }
 
-  /* ── Featured layout: horizontal carousel ── */
-  .carousel {
+  /* ── Featured layout: carousel ── */
+  .carousel-wrap {
     position: relative;
     max-width: 1280px;
     margin: 0 auto;
@@ -194,6 +194,8 @@
   .featured-stack {
     display: flex;
     flex-direction: row;
+    gap: 0;
+    margin: 0;
     transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
   }
   .featured-stack .project-card {
@@ -201,57 +203,56 @@
     width: 100%;
   }
 
-  /* Arrow controls */
+  /* arrows */
   .carousel-arrow {
     position: absolute; top: 50%; transform: translateY(-50%);
     z-index: 5; width: 3rem; height: 3rem; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(7,12,23,0.85); border: 1px solid rgba(200,240,60,0.35);
-    color: var(--lime); font-size: 1.3rem; cursor: none;
-    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    background: rgba(7,12,23,0.72); backdrop-filter: blur(6px);
+    border: 1px solid var(--border-hi); color: var(--lime);
+    font-size: 1.2rem; cursor: none;
+    transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
   }
-  .carousel-arrow:hover { border-color: var(--lime); background: rgba(200,240,60,0.12); }
-  .carousel-arrow:active { transform: translateY(-50%) scale(0.92); }
-  .carousel-arrow-prev { left: -1.4rem; }
-  .carousel-arrow-next { right: -1.4rem; }
-  .carousel-arrow:disabled { opacity: 0.3; pointer-events: none; }
+  .carousel-arrow:hover { background: var(--lime); color: var(--bg); transform: translateY(-50%) scale(1.06); }
+  .carousel-arrow.prev { left: -1.5rem; }
+  .carousel-arrow.next { right: -1.5rem; }
+  @media (max-width: 1360px) {
+    .carousel-arrow.prev { left: 0.6rem; }
+    .carousel-arrow.next { right: 0.6rem; }
+  }
+  @media (max-width: 640px) {
+    .carousel-arrow { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
+  }
 
-  .carousel-dots {
-    display: flex; justify-content: center; gap: 0.5rem;
-    margin-top: 1.8rem;
+  /* dots + counter */
+  .carousel-meta {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.2rem; margin-top: 1.6rem;
   }
+  .carousel-dots { display: flex; align-items: center; gap: 0.5rem; }
   .carousel-dot {
-    width: 7px; height: 7px; border-radius: 50%; cursor: none;
-    background: var(--border-hi); border: none;
-    transition: background 0.25s, transform 0.25s;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); border: none; cursor: none;
+    padding: 0; transition: background 0.25s ease, transform 0.25s ease;
   }
   .carousel-dot.active { background: var(--lime); transform: scale(1.3); }
 
-  @media (max-width: 960px) {
-    .carousel-arrow-prev { left: 0.5rem; }
-    .carousel-arrow-next { right: 0.5rem; }
-  }
-
-  /* Each row: image left, text right */
+  /* Each card: image on top, text in a box below */
   .project-card {
     position: relative; overflow: hidden; cursor: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 320px;
+    display: flex;
+    flex-direction: column;
     background: var(--bg3);
     border: 1px solid rgba(200,240,60,0.18);
     transition: border-color 0.4s;
   }
   .project-card:hover { border-color: rgba(200,240,60,0.5); }
 
-  /* Alternate: odd cards image-left, even cards image-right */
-  .project-card:nth-child(even) { direction: rtl; }
-  .project-card:nth-child(even) > * { direction: ltr; }
-
-  /* Image pane — must have explicit height so position:absolute children can fill it */
+  /* Image pane — fixed aspect ratio, image fills it fully */
   .card-image-pane {
     position: relative; overflow: hidden;
-    min-height: 320px;
+    width: 100%;
+    aspect-ratio: 3.6/1;
   }
   .card-bg {
     position: absolute; inset: 0; background-size: cover; background-position: center;
@@ -260,25 +261,13 @@
   }
   .project-card:hover .card-bg { transform: scale(1.05); filter: brightness(0.55) saturate(0.7); }
 
-  /* Edge gradient — bleeds image into the text pane */
-  .card-edge-fade {
-    position: absolute; inset: 0;
-    background: linear-gradient(to right, transparent 60%, var(--bg3) 100%);
-    pointer-events: none;
-  }
-  .project-card:nth-child(even) .card-edge-fade {
-    background: linear-gradient(to left, transparent 60%, var(--bg3) 100%);
-  }
-
-  /* Text pane */
+  /* Text pane — sits in its own box under the image */
   .card-text-pane {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center;
     padding: 1.4rem 2rem;
     position: relative;
-  }
-  .project-card:nth-child(even) .card-text-pane {
-    padding: 1.4rem 2rem;
+    border-top: 1px solid rgba(200,240,60,0.15);
   }
 
   /* Index marker */
@@ -286,10 +275,10 @@
     font-family: 'Bricolage Grotesque', sans-serif;
     font-size: 0.6rem; font-weight: 700; letter-spacing: 0.22em;
     color: var(--lime); opacity: 0.6;
-    margin-bottom: 0.6rem; display: block;
+    margin-bottom: 0.5rem; display: block;
   }
 
-  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.7rem; justify-content: center; }
+  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; justify-content: center; }
   .tag {
     font-size: 0.62rem; font-weight: 500; letter-spacing: 0.09em;
     padding: 0.2rem 0.6rem; border-radius: 100px;
@@ -298,19 +287,19 @@
 
   .card-title {
     font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
-    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.7rem);
     letter-spacing: -0.025em; color: var(--text); line-height: 1.05;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
   }
 
   .card-desc {
-    font-size: 0.85rem; font-weight: 300; color: var(--text-muted);
-    line-height: 1.6; max-width: 36ch;
+    font-size: 0.82rem; font-weight: 300; color: var(--text-muted);
+    line-height: 1.55; max-width: 40ch;
   }
 
   /* Arrow link */
   .card-arrow {
-    margin-top: 1.8rem;
+    margin-top: 1.1rem;
     display: inline-flex; align-items: center; gap: 0.55rem;
     font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em;
     color: var(--lime); text-transform: uppercase;
@@ -324,13 +313,12 @@
   .project-card:hover .card-arrow { opacity: 1; transform: translateY(0); }
   .project-card:hover .card-arrow::after { transform: translate(2px, -2px); }
 
+  /* card border stays consistent on every card now that they're carousel slides,
+     not a stacked column, so no adjacent-sibling border removal is needed */
+
   @media (max-width: 860px) {
-    .project-card { grid-template-columns: 1fr; min-height: auto; }
-    .project-card:nth-child(even) { direction: ltr; }
-    .card-image-pane { aspect-ratio: 16/9; min-height: 220px; }
-    .card-edge-fade { background: linear-gradient(to bottom, transparent 60%, var(--bg3) 100%) !important; }
-    .card-text-pane,
-    .project-card:nth-child(even) .card-text-pane { padding: 2rem 1.5rem; }
+    .card-image-pane { aspect-ratio: 16/9; }
+    .card-text-pane { padding: 1.4rem 1.5rem; }
   }
 
   /* bg tints per card */
@@ -576,18 +564,15 @@
     <div class="section-rule"></div>
   </div>
 
-  <div class="carousel reveal">
-    <button class="carousel-arrow carousel-arrow-prev" id="carousel-prev" aria-label="Previous project">‹</button>
-    <button class="carousel-arrow carousel-arrow-next" id="carousel-next" aria-label="Next project">›</button>
+  <div class="carousel-wrap reveal">
+  <button class="carousel-arrow prev" aria-label="Previous project" type="button">←</button>
+  <button class="carousel-arrow next" aria-label="Next project" type="button">→</button>
+  <div class="carousel-viewport">
+  <div class="featured-stack">
 
-    <div class="carousel-viewport">
-    <div class="featured-stack" id="carousel-track">
-
-    <!-- 01 — image left -->
-    <button class="project-card reveal" data-href="project-umbrae-page.html">
+    <button class="project-card" data-href="project-umbrae-page.html">
       <div class="card-image-pane">
         <div class="card-bg bg-c1" style="background-image:url('Project Umbrae/Project\ UMBRAE\ Featured\ Banner.webp'); background-size:cover; background-position:center;"></div>
-        <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
         <span class="card-index">01</span>
@@ -598,11 +583,9 @@
       </div>
     </button>
 
-    <!-- 02 — image right (alternates via nth-child) -->
-    <button class="project-card reveal" data-href="polar-fields-page.html">
+    <button class="project-card" data-href="polar-fields-page.html">
       <div class="card-image-pane">
         <div class="card-bg bg-c3" style="background-image:url('PolarFields\ Poster.png'); background-size:cover; background-position:center;"></div>
-        <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
         <span class="card-index">02</span>
@@ -613,11 +596,9 @@
       </div>
     </button>
 
-    <!-- 03 — image left -->
-    <button class="project-card reveal" data-href="realm-page.html">
+    <button class="project-card" data-href="realm-page.html">
       <div class="card-image-pane">
         <div class="card-bg bg-c7" style="background-image:url('Realm/Realm\ Featured\ Banner.webp'); background-size:cover; background-position:center;"></div>
-        <div class="card-edge-fade"></div>
       </div>
       <div class="card-text-pane">
         <span class="card-index">03</span>
@@ -628,10 +609,13 @@
       </div>
     </button>
 
-    </div>
-    </div>
+  </div>
+  </div>
 
-    <div class="carousel-dots" id="carousel-dots"></div>
+  <div class="carousel-meta">
+    <div class="carousel-dots"></div>
+  </div>
+
   </div>
 
   <div style="text-align:center; margin-top: 3.5rem;" class="reveal">
@@ -945,47 +929,48 @@ document.querySelectorAll('.project-card[data-href]').forEach(card => {
   card.addEventListener('click', () => { window.location.href = card.dataset.href; });
 });
 
-// project carousel — arrows step through featured project cards
+// project carousel — arrows + dots step through the featured stack
 (function() {
-  const track  = document.getElementById('carousel-track');
-  const prev   = document.getElementById('carousel-prev');
-  const next   = document.getElementById('carousel-next');
-  const dotsEl = document.getElementById('carousel-dots');
-  if (!track || !prev || !next) return;
+  const track = document.querySelector('.carousel-wrap .featured-stack');
+  if (!track) return;
+  const cards = Array.from(track.children);
+  const prevBtn = document.querySelector('.carousel-arrow.prev');
+  const nextBtn = document.querySelector('.carousel-arrow.next');
+  const dotsWrap = document.querySelector('.carousel-dots');
+  let idx = 0;
 
-  const slides = Array.from(track.children);
-  let index = 0;
-
-  // build dots
-  slides.forEach((_, i) => {
+  cards.forEach((_, i) => {
     const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.type = 'button';
+    dot.className = 'carousel-dot';
     dot.setAttribute('aria-label', 'Go to project ' + (i + 1));
     dot.addEventListener('click', () => goTo(i));
-    dotsEl.appendChild(dot);
+    dotsWrap.appendChild(dot);
   });
-  const dots = Array.from(dotsEl.children);
+  const dots = Array.from(dotsWrap.children);
 
-  function render() {
-    track.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  function update() {
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
   }
-
   function goTo(i) {
-    index = (i + slides.length) % slides.length;
-    render();
+    idx = (i + cards.length) % cards.length;
+    update();
   }
+  prevBtn.addEventListener('click', (e) => { e.stopPropagation(); goTo(idx - 1); });
+  nextBtn.addEventListener('click', (e) => { e.stopPropagation(); goTo(idx + 1); });
 
-  prev.addEventListener('click', () => goTo(index - 1));
-  next.addEventListener('click', () => goTo(index + 1));
+  // basic swipe support
+  let touchStartX = null;
+  track.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) goTo(dx > 0 ? idx - 1 : idx + 1);
+    touchStartX = null;
+  }, { passive: true });
 
-  // keyboard support when carousel has focus
-  document.querySelector('.carousel').addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') goTo(index - 1);
-    if (e.key === 'ArrowRight') goTo(index + 1);
-  });
-
-  render();
+  update();
 })();
 // hero title rotation — dot tracks the pill width as it animates
 const heroTitles = [
