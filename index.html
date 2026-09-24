@@ -182,13 +182,54 @@
   /* projects */
   #projects { padding: 6rem 3.5rem; }
 
-  /* ── Featured layout: full-width vertical stack ── */
-  .featured-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  /* ── Featured layout: horizontal carousel ── */
+  .carousel {
+    position: relative;
     max-width: 1280px;
     margin: 0 auto;
+  }
+  .carousel-viewport {
+    overflow: hidden;
+  }
+  .featured-stack {
+    display: flex;
+    flex-direction: row;
+    transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .featured-stack .project-card {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  /* Arrow controls */
+  .carousel-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    z-index: 5; width: 3rem; height: 3rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(7,12,23,0.85); border: 1px solid rgba(200,240,60,0.35);
+    color: var(--lime); font-size: 1.3rem; cursor: none;
+    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+  }
+  .carousel-arrow:hover { border-color: var(--lime); background: rgba(200,240,60,0.12); }
+  .carousel-arrow:active { transform: translateY(-50%) scale(0.92); }
+  .carousel-arrow-prev { left: -1.4rem; }
+  .carousel-arrow-next { right: -1.4rem; }
+  .carousel-arrow:disabled { opacity: 0.3; pointer-events: none; }
+
+  .carousel-dots {
+    display: flex; justify-content: center; gap: 0.5rem;
+    margin-top: 1.8rem;
+  }
+  .carousel-dot {
+    width: 7px; height: 7px; border-radius: 50%; cursor: none;
+    background: var(--border-hi); border: none;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .carousel-dot.active { background: var(--lime); transform: scale(1.3); }
+
+  @media (max-width: 960px) {
+    .carousel-arrow-prev { left: 0.5rem; }
+    .carousel-arrow-next { right: 0.5rem; }
   }
 
   /* Each row: image left, text right */
@@ -282,11 +323,6 @@
   }
   .project-card:hover .card-arrow { opacity: 1; transform: translateY(0); }
   .project-card:hover .card-arrow::after { transform: translate(2px, -2px); }
-
-  /* Dividing line between cards */
-  .featured-stack .project-card + .project-card {
-    border-top: none;
-  }
 
   @media (max-width: 860px) {
     .project-card { grid-template-columns: 1fr; min-height: auto; }
@@ -540,7 +576,12 @@
     <div class="section-rule"></div>
   </div>
 
-  <div class="featured-stack">
+  <div class="carousel reveal">
+    <button class="carousel-arrow carousel-arrow-prev" id="carousel-prev" aria-label="Previous project">‹</button>
+    <button class="carousel-arrow carousel-arrow-next" id="carousel-next" aria-label="Next project">›</button>
+
+    <div class="carousel-viewport">
+    <div class="featured-stack" id="carousel-track">
 
     <!-- 01 — image left -->
     <button class="project-card reveal" data-href="project-umbrae-page.html">
@@ -587,6 +628,10 @@
       </div>
     </button>
 
+    </div>
+    </div>
+
+    <div class="carousel-dots" id="carousel-dots"></div>
   </div>
 
   <div style="text-align:center; margin-top: 3.5rem;" class="reveal">
@@ -899,6 +944,49 @@ document.querySelectorAll('.stat-box').forEach(box => countObs.observe(box));
 document.querySelectorAll('.project-card[data-href]').forEach(card => {
   card.addEventListener('click', () => { window.location.href = card.dataset.href; });
 });
+
+// project carousel — arrows step through featured project cards
+(function() {
+  const track  = document.getElementById('carousel-track');
+  const prev   = document.getElementById('carousel-prev');
+  const next   = document.getElementById('carousel-next');
+  const dotsEl = document.getElementById('carousel-dots');
+  if (!track || !prev || !next) return;
+
+  const slides = Array.from(track.children);
+  let index = 0;
+
+  // build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to project ' + (i + 1));
+    dot.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(dot);
+  });
+  const dots = Array.from(dotsEl.children);
+
+  function render() {
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  }
+
+  function goTo(i) {
+    index = (i + slides.length) % slides.length;
+    render();
+  }
+
+  prev.addEventListener('click', () => goTo(index - 1));
+  next.addEventListener('click', () => goTo(index + 1));
+
+  // keyboard support when carousel has focus
+  document.querySelector('.carousel').addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') goTo(index - 1);
+    if (e.key === 'ArrowRight') goTo(index + 1);
+  });
+
+  render();
+})();
 // hero title rotation — dot tracks the pill width as it animates
 const heroTitles = [
   'Game Designer',
